@@ -36,6 +36,11 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'core',
+    'users',
+    'reservations',
+    'houses',
+    'reviews',
     'django_extensions',
     'corsheaders',
     # 'django.contrib.admin',
