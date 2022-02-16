@@ -10,6 +10,7 @@ class House(models.Model):
     exit        = models.BooleanField(default=False)
     city        = models.ForeignKey('City', on_delete=models.CASCADE)
     house_type  = models.ForeignKey('HouseType', on_delete=models.CASCADE)
+    ghost       = models.ForeignKey('Ghost', on_delete=models.CASCADE, null=True)
     user        = models.ForeignKey('users.User', on_delete=models.CASCADE, null=True)
 
     class Meta:
@@ -30,7 +31,6 @@ class HouseType(models.Model):
 
 class Ghost(models.Model):
     name  = models.CharField(max_length=30)
-    house = models.ForeignKey('House', on_delete=models.CASCADE, null=True)
 
     class Meta:
         db_table = 'ghosts'
