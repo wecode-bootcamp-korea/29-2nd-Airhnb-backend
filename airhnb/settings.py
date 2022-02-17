@@ -11,7 +11,13 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-from my_settings import DATABASES, SECRET_KEY
+from my_settings import (DATABASES, 
+                         SECRET_KEY, 
+                         AWS_ACCESS_KEY_ID, 
+                         AWS_SECRET_ACCESS_KEY, 
+                         AWS_STORAGE_BUCKET_NAME, 
+                         AWS_REGION, 
+                         AWS_S3_CUSTOM_DOMAIN)
 
 import pymysql
 
@@ -27,15 +33,30 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = SECRET_KEY
 
+AWS_S3_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
+
+AWS_S3_SECRET_ACCESS_KEY = AWS_SECRET_ACCESS_KEY
+
+AWS_STORAGE_BUCKET_NAME = AWS_STORAGE_BUCKET_NAME
+
+AWS_REGION = AWS_REGION
+
+AWS_S3_CUSTOM_DOMAIN = AWS_S3_CUSTOM_DOMAIN
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-
 # Application definition
 
 INSTALLED_APPS = [
+    # 'django.contrib.admin',
+    # 'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
     'core',
     'users',
     'reservations',
@@ -43,12 +64,7 @@ INSTALLED_APPS = [
     'reviews',
     'django_extensions',
     'corsheaders',
-    # 'django.contrib.admin',
-    # 'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
+    'storages',
 ]
 
 MIDDLEWARE = [
