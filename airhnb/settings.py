@@ -10,8 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
-from pathlib import Path
-from my_settings import DATABASES, SECRET_KEY
+from pathlib     import Path
+from my_settings import (
+                        DATABASES,
+                        SECRET_KEY,
+                        REST_API_KEY,
+                        ALGORITHM,
+                        REDIRECT_URI,
+                        KAKAO_HOST
+                        )
 
 import pymysql
 
@@ -26,6 +33,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = SECRET_KEY
+
+ALGORITHM = ALGORITHM
+
+REST_API_KEY = REST_API_KEY
+
+REDIRECT_URI = REDIRECT_URI
+
+KAKAO_HOST = KAKAO_HOST
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -158,3 +173,21 @@ CORS_ALLOW_HEADERS = (
     'x-csrftoken',
     'x-requested-with',
 )
+
+LOGGING = {
+    'disable_existing_loggers': False,
+    'version': 1,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'level': 'DEBUG',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

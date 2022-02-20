@@ -1,3 +1,5 @@
-from django.test import TestCase
+from django.test import mock, patch
 
-# Create your tests here.
+@patch("users.views.requests")
+def test_kakao_signin_new_user_success():
+    
