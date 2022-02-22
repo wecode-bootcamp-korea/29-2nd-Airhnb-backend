@@ -3,10 +3,10 @@ from django.db import models
 from core.models import TimeStampModel
 
 class User(TimeStampModel):
-    name              = models.CharField(max_length=50)
-    email             = models.EmailField(max_length=100, unique=True)
+    name              = models.CharField(max_length=50, null=True)
+    email             = models.EmailField(max_length=100, unique=True, null=True)
     password          = models.CharField(max_length=200)
-    phone_number      = models.CharField(max_length=50)
+    phone_number      = models.CharField(max_length=50, null=True)
     profile_image_url = models.CharField(max_length=2000, null=True)
     kakao_id          = models.CharField(max_length=2000, null=True)
     google_id         = models.CharField(max_length=2000, null=True)
