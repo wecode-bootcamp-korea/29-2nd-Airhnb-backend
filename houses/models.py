@@ -1,3 +1,5 @@
+from enum import Enum
+
 from django.db import models
 
 class House(models.Model):
@@ -47,3 +49,27 @@ class City(models.Model):
 
     class Meta:
         db_table = 'cities'
+
+class HouseTypeEnum(Enum):
+    폐가 = 1
+    정신병원 = 2
+    교회 = 3
+    학교 = 4
+    기숙사 = 5 
+    공동묘지 = 6
+    호텔 = 7
+    숲 = 8
+    시장 = 9
+    폐허 = 10
+
+class GhostEnum(Enum):
+    처녀귀신 = 1
+    좀비 = 2
+    드라큘라 = 3
+    유령 = 4
+    개발자 = 5
+    학생 = 6
+    목사 = 7
+    연쇄살인마 = 8 
+    백작 = 9
+    환자 = 10
