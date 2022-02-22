@@ -1,12 +1,13 @@
-import json
+from django.views  import View
+from django.http   import JsonResponse
 
-from django.views            import View
-from django.http             import JsonResponse
-
-from .models                 import House, HouseImage, HouseType, Ghost ,Country,City
-from reservations.models     import Reservation
-
-
+from houses.models import (
+                            House,
+                            HouseTypeEnum,
+                            GhostEnum,
+                            Country,
+                            City
+                            )
 
 class HouseDetailView(View):
     def get(self, request, house_id):
@@ -33,3 +34,22 @@ class HouseDetailView(View):
         } 
 
         return JsonResponse({'result' : result}, status = 200)
+                            
+class OptionView(View):
+    def get(self, request):
+        results = [
+            {
+                'house_type': [house_type.name for house_type in HouseTypeEnum]
+            },
+            {
+                'ghost': [ghost.name for ghost in GhostEnum]
+            },
+            {
+                'country': [country.name for country in Country.objects.all()]
+            },
+            {
+                'city': [city.name for city in City.objects.all()]
+            }
+        ]
+
+        return JsonResponse({'results': results}, status=200)
