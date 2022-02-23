@@ -1,5 +1,4 @@
-import json
-import boto3
+import json, boto3
 
 from django.http      import JsonResponse
 from django.views     import View
