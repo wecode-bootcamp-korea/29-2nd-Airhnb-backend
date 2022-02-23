@@ -10,7 +10,7 @@ class User(TimeStampModel):
     profile_image_url = models.CharField(max_length=2000, null=True)
     kakao_id          = models.CharField(max_length=2000, null=True)
     google_id         = models.CharField(max_length=2000, null=True)
-    birth_date        = models.DateField()
+    birth_date        = models.DateField(null=True)
     
     class Meta:
         db_table = 'users'
