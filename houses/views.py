@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from django.http      import JsonResponse
 from django.views     import View
@@ -33,12 +33,12 @@ class OptionView(View):
 
 class HouseView(View):
     def get(self, request):
-        house_type  = request.GET.getlist('house_type',None)
-        ghost       = request.GET.getlist('ghost',None)
-        country     = request.GET.getlist('country',None)
-        city        = request.GET.getlist('city', None)
-        trap        = request.GET.get('trap', None)
-        exit        = request.GET.get('exit', None)
+        # house_type  = request.GET.getlist('house_type',None)
+        # ghost       = request.GET.getlist('ghost',None)
+        # country     = request.GET.getlist('country',None)
+        # city        = request.GET.getlist('city', None)
+        # trap        = request.GET.get('trap', None)
+        # exit        = request.GET.get('exit', None)
         check_in    = request.GET.get('check_in', None)
         check_out   = request.GET.get('check_out', None)
         headcount   = request.GET.get('headcount', None)
@@ -51,41 +51,38 @@ class HouseView(View):
             'country'   : 'city__country__name__in',
             'city'      : 'city__name__in',
             'trap'      : 'trap__in',
-            'exit'      : 'exit__in',
-            'check_in'  : 'reservation__check_in__range',
-            'check_out' : 'reservation__check_in__gt',
-            'headcount' : 'max_guest__lt',
+            'exit'      : 'exit__in'
         }
 
         filter_set = {
             filter_options.get(key): value for (key, value) in dict(request.GET).items() if filter_options.get(key)
         }
 
-        options     = Q()
         reservation = Q()
 
-        if house_type:
-            options &= Q(house_type__name__in=house_type)
-        if ghost:
-            options &= Q(ghost__name__in=ghost)
-        if country:
-            options &= Q(city__country__name__in=country)
-        if city:
-            options &= Q(city__name__in=city)
-        if trap:
-            options &= Q(trap=trap)
-        if exit:
-            options &= Q(exit=exit)
+        # if house_type:
+        #     options &= Q(house_type__name__in=house_type)
+        # if ghost:
+        #     options &= Q(ghost__name__in=ghost)
+        # if country:
+        #     options &= Q(city__country__name__in=country)
+        # if city:
+        #     options &= Q(city__name__in=city)
+        # if trap:
+        #     options &= Q(trap=trap)
+        # if exit:
+        #     options &= Q(exit=exit)
         if check_in and check_out:
-            check_in = datetime.strptime(check_in, '%Y-%m-%d')
+            check_in  = datetime.strptime(check_in, '%Y-%m-%d')
             check_out = datetime.strptime(check_out, '%Y-%m-%d')
             
-            reservation &= Q(reservation__check_in__range=(check_in, check_out-datetime.timedelta(days=1)))
-            reservation &= Q(reservation__check_out__range=(check_in, check_out-datetime.timedelta(days=1)))
+            reservation &= Q(reservation__check_in__range=(check_in, check_out-timedelta(days=1)))
+            reservation &= Q(reservation__check_out__range=(check_in, check_out-timedelta(days=1)))
         if headcount:
             reservation &= Q(max_guest__lt=headcount)
 
-        houses = House.objects.filter(options, ~reservation)\
+        houses = House.objects.filter(**filter_set)\
+                        .exclude(reservation)\
                         .select_related('user')\
                         .select_related('ghost')\
                         .prefetch_related('houseimage_set')\
