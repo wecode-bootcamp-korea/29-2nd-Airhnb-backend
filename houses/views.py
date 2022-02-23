@@ -1,9 +1,11 @@
 import json, boto3
+from datetime import datetime, timedelta
 
-from django.http      import JsonResponse
-from django.views     import View
-from django.db        import transaction
-from django.conf      import settings
+from django.http       import JsonResponse
+from django.views      import View
+from django.db         import transaction
+from django.conf       import settings
+from django.db.models  import Q, Count, Avg
 
 from houses.models    import Country, House, HouseImage, City, HouseTypeEnum, GhostEnum
 from core.storages    import ImageUploader, ImageHandler
@@ -34,7 +36,7 @@ class HouseDetailView(View):
         } 
 
         return JsonResponse({'result' : result}, status = 200)
-                            
+        
 class OptionView(View):
     def get(self, request):
         results = [
@@ -126,3 +128,73 @@ class HostView(View):
             return JsonResponse({"message" : "KEY ERROR"}, status=400)
         except Exception as e:
             return JsonResponse({"message" : getattr(e,"message",str(e))}, status=400)
+            
+class HouseListView(View):
+    def get(self, request):
+        check_in    = request.GET.get('check_in', None)
+        check_out   = request.GET.get('check_out', None)
+        headcount   = request.GET.get('headcount', None)
+        limit       = int(request.GET.get('limit', '10'))
+        offset      = int(request.GET.get('offset', '0'))
+
+        filter_options = {
+            'house_type': 'house_type__name__in',
+            'ghost'     : 'ghost__name__in',
+            'country'   : 'city__country__name__in',
+            'city'      : 'city__name__in',
+            'trap'      : 'trap__in',
+            'exit'      : 'exit__in'
+        }
+
+        filter_set = {
+            filter_options.get(key): value\
+                for (key, value) in dict(request.GET).items()\
+                    if filter_options.get(key)
+        }
+
+        reservation = Q()
+
+        if check_in and check_out:
+            check_in  = datetime.strptime(check_in, '%Y-%m-%d')
+            check_out = datetime.strptime(check_out, '%Y-%m-%d')
+            
+            reservation &= Q(reservation__check_in__range=(check_in, check_out-timedelta(days=1)))
+            reservation &= Q(reservation__check_out__range=(check_in, check_out-timedelta(days=1)))
+        if headcount:
+            reservation &= Q(max_guest__lt=headcount)
+
+        houses = House.objects.filter(**filter_set)\
+                        .exclude(reservation)\
+                        .select_related('user')\
+                        .select_related('ghost')\
+                        .prefetch_related('houseimage_set')\
+                        .prefetch_related('review_set')\
+                        .annotate(review_average=Avg('review__fear_rating'))\
+                        .annotate(review_total=Count('review__fear_rating'))
+
+        results = [
+            {
+                'house_id'        : house.id,
+                'name'            : house.name,
+                'house_image'     : [image.image_url for image in house.houseimage_set.all()],
+                'lat'             : house.latitude,
+                'lng'             : house.longitude,
+                'user_name'       : house.user.name if house.user else None,
+                'review_average'  : house.review_average,
+                'review_count'    : house.review_total,
+                'trap'            : house.trap,
+                'exit'            : house.exit,
+                'ghost'           : house.ghost.name if house.ghost else None,
+                'city'            : house.city.name,
+                'country'         : house.city.country.name,
+                'house_type'      : house.house_type.name
+            } for house in houses[offset:offset+limit]
+        ]
+
+        total_pages = houses.aggregate(total=Count('name'))['total']
+
+        return JsonResponse({
+            'results'    : results,
+            'total_pages': total_pages
+            },
+            status=200)
