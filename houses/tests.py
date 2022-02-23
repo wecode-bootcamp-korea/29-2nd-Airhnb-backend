@@ -6,16 +6,6 @@ from houses.models import Country, City, House
 
 class HouseTest(TestCase):
     def setUp(self):
-        class HouseTypeEnum(Enum):
-            폐가    = 1
-            정신병원 = 2
-            교회    = 3
-
-        class GhostEnum(Enum):
-            처녀귀신 = 1
-            좀비    = 2
-            드라큘라 = 3
-
         countries = Country.objects.bulk_create(
             [
                 Country(name='대한민국'),
@@ -41,8 +31,8 @@ class HouseTest(TestCase):
                     trap=True,
                     exit=True,
                     city_id=1,
-                    house_type_id=HouseTypeEnum.교회.value,
-                    ghost_id=GhostEnum.드라큘라.value
+                    house_type_id=1,
+                    ghost_id=1
                 ),
                 House(
                     name='house2',
@@ -53,8 +43,8 @@ class HouseTest(TestCase):
                     trap=True,
                     exit=False,
                     city_id=2,
-                    house_type_id=HouseTypeEnum.정신병원.value,
-                    ghost_id=GhostEnum.처녀귀신.value
+                    house_type_id=2,
+                    ghost_id=1
                 )
             ]
         )
@@ -66,3 +56,21 @@ class HouseTest(TestCase):
 
     def test_success_house_view(self):
         client = Client()
+
+        response = client.get("/houses")
+
+        self.assertEqual(response.json(), [{
+            'house_id' : 1,
+            'name'    : "A",
+        }])
+
+    def test_success_house_view_filtering_check_in_and_check_out(self):
+        client = Client()
+
+        response = client.get("/houses?checkout="1990-00-00")
+
+        self.assertEqual(response.json(), [])
+        self.assertEqual(response.json(), [{
+            "id" : 1,
+            "checkin" : "1990-00-00"
+        }])

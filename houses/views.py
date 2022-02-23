@@ -1,4 +1,4 @@
-from decimal import Decimal
+from datetime import datetime
 
 from django.http      import JsonResponse
 from django.views     import View
@@ -42,8 +42,6 @@ class HouseView(View):
         check_in    = request.GET.get('check_in', None)
         check_out   = request.GET.get('check_out', None)
         headcount   = request.GET.get('headcount', None)
-        # latitude    = Decimal(request.GET.get('lat'))
-        # longitude   = Decimal(request.GET.get('lng'))
         limit       = int(request.GET.get('limit', '10'))
         offset      = int(request.GET.get('offset', '0'))
 
@@ -54,19 +52,17 @@ class HouseView(View):
             'city'      : 'city__name__in',
             'trap'      : 'trap__in',
             'exit'      : 'exit__in',
-            # 'check_in'  : 'reservation__check_in__range',
-            # 'check_out' : 'reservation__check_in__gt',
+            'check_in'  : 'reservation__check_in__range',
+            'check_out' : 'reservation__check_in__gt',
             'headcount' : 'max_guest__lt',
         }
 
         filter_set = {
-            filter_options.get(key): value[0] for (key, value) in dict(request.GET).items() if filter_options.get(key)
+            filter_options.get(key): value for (key, value) in dict(request.GET).items() if filter_options.get(key)
         }
 
         options     = Q()
         reservation = Q()
-
-        
 
         if house_type:
             options &= Q(house_type__name__in=house_type)
@@ -80,14 +76,12 @@ class HouseView(View):
             options &= Q(trap=trap)
         if exit:
             options &= Q(exit=exit)
-        # if latitude and longitude:
-        #     options &= Q(__range=(latitude, longitude))
-        if check_in:
-            reservation &= Q(reservation__check_in__range=(check_in, check_out))
-        if check_out:
-            reservation &= Q(reservation__check_in__gt=check_in)
-        if check_out:
-            reservation &= Q(reservation__check_in__lte=check_out)
+        if check_in and check_out:
+            check_in = datetime.strptime(check_in, '%Y-%m-%d')
+            check_out = datetime.strptime(check_out, '%Y-%m-%d')
+            
+            reservation &= Q(reservation__check_in__range=(check_in, check_out-datetime.timedelta(days=1)))
+            reservation &= Q(reservation__check_out__range=(check_in, check_out-datetime.timedelta(days=1)))
         if headcount:
             reservation &= Q(max_guest__lt=headcount)
 
