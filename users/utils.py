@@ -1,4 +1,3 @@
-from urllib import response
 import jwt, requests
 
 from django.conf import settings
