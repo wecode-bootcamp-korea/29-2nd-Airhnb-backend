@@ -15,8 +15,14 @@ class KakaoSignInTest(TestCase):
         User.objects.all().delete()
 
     @patch("users.utils.requests")
-    def test_new_user_signin_success(self, mocked_requests):
+    def test_new_user_signin_success(self, mocked_token_requests, mocked_info_requests):
         client = Client()
+        
+        class MockedTokenResponse:
+            def json(self):
+                return {
+                    "access_token" : "mocked_access_token"
+                }
 
         class MockedResponse:
             def json(self):
@@ -41,9 +47,8 @@ class KakaoSignInTest(TestCase):
                         }
                     }
 
-        mocked_requests.post = MagicMock(return_value = MockedResponse())
+        mocked_token_requests.post = MagicMock(return_value = MockedTokenResponse())
+        mocked_info_requests.post  = MagicMock(return_value = MockedResponse())
 
         response = client.get("/users/kakao/signin?code=testcode")
-        print('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!')
-        print(response.json())
-        self.assertEqual(response.json(), 200)
+        self.assertEqual(response.status_code, 200)
