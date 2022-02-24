@@ -17,7 +17,10 @@ from my_settings import (DATABASES,
                          AWS_SECRET_ACCESS_KEY, 
                          AWS_STORAGE_BUCKET_NAME, 
                          AWS_REGION, 
-                         AWS_S3_CUSTOM_DOMAIN)
+                         AWS_S3_CUSTOM_DOMAIN,
+                         REST_API_KEY,
+                         REDIRECT_URI,
+                         ALGORITHM)
 
 import pymysql
 
@@ -31,6 +34,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+
 SECRET_KEY = SECRET_KEY
 
 AWS_S3_ACCESS_KEY_ID = AWS_ACCESS_KEY_ID
@@ -42,6 +46,12 @@ AWS_STORAGE_BUCKET_NAME = AWS_STORAGE_BUCKET_NAME
 AWS_REGION = AWS_REGION
 
 AWS_S3_CUSTOM_DOMAIN = AWS_S3_CUSTOM_DOMAIN
+
+ALGORITHM = ALGORITHM
+
+REST_API_KEY = REST_API_KEY
+
+REDIRECT_URI = REDIRECT_URI
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
