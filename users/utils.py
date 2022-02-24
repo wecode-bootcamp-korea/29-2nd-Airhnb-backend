@@ -16,8 +16,12 @@ class KakaoAPI:
         headers      = {'Content-Type' : 'application/x-www-form-urlencoded'}
         response     = requests.post(outh_url, headers=headers)
 
+        print('토큰 받으러왔구?')
         if response.status_code == 401 :
+            print('inside')
             raise Exception('INVALID_AUTH_CODE')
+        print('토큰 받았구~')
+        print(response)
 
         return response.json()['access_token']
 

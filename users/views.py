@@ -7,9 +7,10 @@ from django.conf      import settings
 from users.models import User
 from users.utils  import KakaoAPI
 
-class KakaoSignIn(View):
+class KakaoSignInView(View):
     def get(self, request):
         try:
+            print('시작~~~~~~~~~')
             if request.GET.get('error'):
                 return JsonResponse({'message': 'INVALID_CODE'}, status=400)
 
@@ -20,6 +21,7 @@ class KakaoSignIn(View):
                 grant_type   = 'authorization_code',
                 redirect_uri = settings.REDIRECT_URI
                 )
+            print('토큰받았냐!!!!!!!!1')
             user_data = kakao.get_user_info(kakao_access_token)
             
             user = User.objects.get_or_create(
@@ -37,5 +39,5 @@ class KakaoSignIn(View):
             return JsonResponse({'access_token': access_token}, status=200)
         except KeyError:
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
-        except Exception:
-            return JsonResponse({'message': ''}, status=400)
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=400)
