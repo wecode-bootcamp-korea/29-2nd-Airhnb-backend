@@ -37,5 +37,5 @@ class KakaoSignInView(View):
             return JsonResponse({'access_token': access_token}, status=200)
         except KeyError:
             return JsonResponse({'message': 'KEY_ERROR'}, status=400)
-        except Exception:
-            return JsonResponse({'message': ''}, status=400)
+        except Exception as e:
+            return JsonResponse({'message': str(e)}, status=400)
