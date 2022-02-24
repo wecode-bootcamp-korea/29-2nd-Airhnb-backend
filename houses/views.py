@@ -68,7 +68,8 @@ class HouseTypeView(View):
     def get(self, request):
         data = [{
             "house_type_id"   : house_type.value,
-            "house_type_name" : house_type.name
+            "house_type_name" : house_type.name,
+            "is_checked"      : False,
         } for house_type in HouseTypeEnum]
         return JsonResponse({"message" : data}, status=200)
 
@@ -76,7 +77,8 @@ class GhostView(View):
     def get(self, request):
         data = [{
             "ghost_id"   : ghost.value,
-            "ghost_name" : ghost.name
+            "ghost_name" : ghost.name,
+            "is_checked" : False,
         } for ghost in GhostEnum]
         return JsonResponse({"message" : data}, status=200)
 
