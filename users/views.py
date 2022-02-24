@@ -23,7 +23,7 @@ class KakaoSignInView(View):
                 )
             print('토큰받았냐!!!!!!!!1')
             user_data = kakao.get_user_info(kakao_access_token)
-            
+            print(user_data)
             user = User.objects.get_or_create(
                 kakao_id = user_data['id'],
                 defaults = {
@@ -32,7 +32,6 @@ class KakaoSignInView(View):
                     'password'         : uuid.uuid4()
                 }
             )[0]
-
             access_token = jwt.encode(
                 {'id': user.id}, settings.SECRET_KEY, settings.ALGORITHM
                 )

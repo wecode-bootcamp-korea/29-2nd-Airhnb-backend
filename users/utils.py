@@ -1,3 +1,4 @@
+from json import JSONDecodeError
 import jwt, requests
 
 from django.conf import settings
@@ -17,21 +18,22 @@ class KakaoAPI:
         response     = requests.post(outh_url, headers=headers)
 
         print('토큰 받으러왔구?')
-        if response.status_code == 401 :
-            print('inside')
-            raise Exception('INVALID_AUTH_CODE')
+        print(response.json())
+        # if response.status_code == 401 :
+        #     print('inside')
+        #     raise Exception('INVALID_AUTH_CODE')
         print('토큰 받았구~')
-        print(response)
-
+        # print(response.status_code)
+        # return JsonResponse({"sdf":123})
         return response.json()['access_token']
 
     def get_user_info(self, kakao_access_token):
         headers  = {'Authorization': f'Bearer {kakao_access_token}'}
         outh_url = 'https://kapi.kakao.com/v2/user/me'
-        response = requests.post(outh_url, headers=headers)
-
-        if response.status_code != 200:
-            raise Exception('INVALID_TOKEN')
+        response = requests.get(outh_url, headers=headers)
+        
+        # if response.status_code != 200:
+        #     raise Exception('INVALID_TOKEN')
 
         return response.json()
 
